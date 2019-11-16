@@ -50,5 +50,3 @@
 /logs
 /platforms
 /plugins
-/www/*
-!/www/.gitkeep

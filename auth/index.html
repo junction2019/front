@@ -2231,7 +2231,7 @@
   <div data-reactroot="" class="auth0-lock auth0-lock-opened auth0-lock-with-tabs" lang="en">
     <div class="auth0-lock-overlay"></div>
     <div class="auth0-lock-center">
-      <form class="auth0-lock-widget" method="post" action="/login">
+      <form class="auth0-lock-widget" method="post">
         <div class="auth0-lock-widget-container">
           <div class="auth0-lock-cred-pane auth0-lock-quiet">
             <div class="auth0-lock-cred-pane-internal-wrapper">
@@ -2328,6 +2328,15 @@
   const apiKey = 'AIzaSyAXGPCguWhcR22BTwA59lNVzM3mdE7QP-Y'
   const authDomain = 'nackjunction.firebaseapp.com'
 
+  firebase.initializeApp({
+      apiKey,
+      authDomain,
+      databaseURL: "https://nackjunction.firebaseio.com",
+      projectId: 'nackjunction',
+  })
+
+  const db = firebase.firestore()
+
   const googleProvider = new firebase.auth['GoogleAuthProvider']()
   const githubProvider = new firebase.auth['GithubAuthProvider']()
 
@@ -2347,6 +2356,24 @@
       authWith(githubProvider)
   }
 
+  const form1 = document.getElementsByTagName('form')[0]
+  const emailInput = document.getElementById('1-email')
+  form1.onsubmit = async (e) => {
+      e.preventDefault()
+
+      if(emailInput.value) {
+          const email = emailInput.value
+          await db.collection("emails").doc(email).set({
+            email,
+            ts: Date.now(),
+          })
+      }
+
+      alert('todo: redirect')
+  }
+
+
+
   async function authWith(provider) {
       try {
           await firebase.auth().signInWithPopup(provider)
@@ -2354,15 +2381,6 @@
           logError(err)
       }
   }
-
-  firebase.initializeApp({
-    apiKey,
-    authDomain,
-    databaseURL: "https://nackjunction.firebaseio.com",
-      projectId: 'nackjunction',
-  })
-
-  const db = firebase.firestore()
 
   firebase.auth().onAuthStateChanged(user => {
       // console.log('onAuthStateChanged, user: ', JSON.stringify(user, null, 2))
@@ -2399,8 +2417,11 @@
                       displayName: user.displayName,
                       photoURL: user.photoURL,
                       token,
+                      ts: Date.now(),
                       // user,
                   })
+
+                  alert('todo: redirect')
               }
 
               // app.user = Object.assign({}, app.user, {

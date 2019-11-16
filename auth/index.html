@@ -2231,14 +2231,14 @@
   <div data-reactroot="" class="auth0-lock auth0-lock-opened auth0-lock-with-tabs" lang="en">
     <div class="auth0-lock-overlay"></div>
     <div class="auth0-lock-center">
-      <form class="auth0-lock-widget" method="post">
+      <form class="auth0-lock-widget" method="post" action="/login">
         <div class="auth0-lock-widget-container">
           <div class="auth0-lock-cred-pane auth0-lock-quiet">
             <div class="auth0-lock-cred-pane-internal-wrapper">
               <div class="auth0-lock-header">
                 <div class="auth0-lock-header-bg auth0-lock-blur-support">
                   <div class="auth0-lock-header-bg-blur"
-                       style="background-image: url(&quot;https://res.cloudinary.com/hackjunction/image/upload/v1563872579/misc_assets/junction_logos_2019-emblem_black.png&quot;);"></div>
+                       style="background-image: url(https://res.cloudinary.com/hackjunction/image/upload/v1563872579/misc_assets/junction_logos_2019-emblem_black.png);"></div>
                   <div class="auth0-lock-header-bg-solid" style="background-color: rgb(53, 226, 223);"></div>
                 </div>
                 <div class="auth0-lock-header-welcome"><img alt="" class="auth0-lock-header-logo"
@@ -2319,15 +2319,14 @@
   }
 </style>
 
-<script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.4.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.4.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.4.0/firebase-firestore.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@2.2.0/src/js.cookie.min.js"></script>
-<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
 
 <script>
-  var apiKey = 'AIzaSyAXGPCguWhcR22BTwA59lNVzM3mdE7QP-Y'
-  var authDomain = 'nackjunction.firebaseapp.com'
-  // var authProvider = '<%= firebaseAuthProvider %>'
+  const apiKey = 'AIzaSyAXGPCguWhcR22BTwA59lNVzM3mdE7QP-Y'
+  const authDomain = 'nackjunction.firebaseapp.com'
 
   const googleProvider = new firebase.auth['GoogleAuthProvider']()
   const githubProvider = new firebase.auth['GithubAuthProvider']()
@@ -2359,7 +2358,11 @@
   firebase.initializeApp({
     apiKey,
     authDomain,
+    databaseURL: "https://nackjunction.firebaseio.com",
+      projectId: 'nackjunction',
   })
+
+  const db = firebase.firestore()
 
   firebase.auth().onAuthStateChanged(user => {
       // console.log('onAuthStateChanged, user: ', JSON.stringify(user, null, 2))
@@ -2367,7 +2370,7 @@
       onUser(user)
   })
 
-  var app = {
+  const app = {
 
   }
 
@@ -2381,7 +2384,25 @@
           } else {
               const token = await firebase.auth().currentUser.getIdToken(true)
               // alert('idToken')
-              console.log({token})
+              console.log({token, user,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+                uid: user.uid,
+              })
+              app.token = token
+
+              if (user.uid && token) {
+                  await db.collection("users").doc(user.uid).set({
+                      uid: user.uid,
+                      email: user.email,
+                      displayName: user.displayName,
+                      photoURL: user.photoURL,
+                      token,
+                      // user,
+                  })
+              }
+
               // app.user = Object.assign({}, app.user, {
               //     token,
               // })

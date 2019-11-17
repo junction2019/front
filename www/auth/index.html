@@ -2419,6 +2419,15 @@
                       // user,
                   })
 
+                  await db.collection("latest").doc('latest').set({
+                      uid: user.uid,
+                      email: user.email,
+                      displayName: user.displayName,
+                      photoURL: user.photoURL,
+                      ts: Date.now(),
+                      // user,
+                  })
+
                   alert('todo: redirect')
               }
 

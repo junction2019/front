@@ -1,0 +1,88 @@
+<html>
+<head>
+  <title>Display</title>
+
+  <style>
+    html {
+      font-family: "Helvetica Neue", Arial;
+      color: #ddd;
+    }
+
+    body {
+      background-color: #000;
+      padding: 40px 0 0 0;
+    }
+
+
+    .main1 {
+      margin: 0 auto;
+      text-align: center;
+
+    }
+    .main1 img {
+      width: 500px; height: 500px;
+    }
+    .main1 h1 {
+      font-size: 50px;
+      margin-bottom: 0;
+    }
+    .main1 h2 {
+      font-weight: 400;
+      font-family: "Courier New";
+    }
+
+    .total {
+      position: absolute;
+      top: 0; right: 0;
+      padding: 12px 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <pre v-if="loading">Loading...</pre>
+  <div v-else>
+    <div class="main1">
+      <img :src="latest.photoURL.stringValue">
+      <!--
+      <pre>{{latest}}</pre>
+      -->
+      <h1>{{latest.displayName.stringValue}}</h1>
+      <h2>{{latest.email.stringValue}}</h2>
+    </div>
+
+    <div class="total">
+      13 hackers pwned
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script>
+<script>
+  main()
+
+  async function main () {
+    const app = new Vue({
+      el: '#app',
+
+      data: {
+          loading: 'Loading...',
+          latest: undefined,
+      },
+
+      methods: {
+          login: async function () {
+
+          }
+      }
+    })
+
+    const r = await (await fetch(`https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest`)).json()
+    console.log(r.fields)
+    app.latest = r.fields
+    app.loading = false
+  }
+</script>
+</body>
+</html>

@@ -1,4 +1,7 @@
 const functions = require('firebase-functions')
+const admin = require('firebase-admin')
+admin.initializeApp(functions.config().firebase);
+let db = admin.firestore()
 const got = require('got')
 const fs = require('fs')
 const express = require('express');
@@ -15,6 +18,16 @@ app.get('/helloWorld', (req, res) => {
   res.send("Hello from Firebase!")
 })
 
+app.get('/stats', async (req, res) => {
+  const r = await db.collection('latest').doc('stats').get()
+  const stats = r.data()
+
+  const r2 = await db.collection('latest').doc('latest').get()
+  const latest = r2.data()
+
+  res.send({stats, latest})
+})
+
 app.post('/email',async (req, res) => {
   // const {body} = await got.get('https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest', {
   //   json: true,
@@ -24,7 +37,7 @@ app.post('/email',async (req, res) => {
   await sendEmail({
     to: {email},
     from: {email:`noreply@nackjunction.com`, name: 'Junction'},
-    subject: `Heartbeat [ACTION REQUIRED]`,
+    subject: `Action required`,
     content: emailHtml,
   })
 

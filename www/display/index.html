@@ -44,16 +44,16 @@
   <pre v-if="loading">Loading...</pre>
   <div v-else>
     <div class="main1">
-      <img :src="latest.photoURL.stringValue">
+      <img :src="stats.latest.photoURL">
       <!--
       <pre>{{latest}}</pre>
       -->
-      <h1>{{latest.displayName.stringValue}}</h1>
-      <h2>{{latest.email.stringValue}}</h2>
+      <h1>{{stats.latest.displayName}}</h1>
+      <h2>{{stats.latest.email}}</h2>
     </div>
 
     <div class="total">
-      13 hackers pwned
+      {{stats.stats.count}} hackers pwned
     </div>
   </div>
 </div>
@@ -68,7 +68,7 @@
 
       data: {
           loading: 'Loading...',
-          latest: undefined,
+          stats: undefined,
       },
 
       methods: {
@@ -78,9 +78,9 @@
       }
     })
 
-    const r = await (await fetch(`https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest`)).json()
-    console.log(r.fields)
-    app.latest = r.fields
+    // const r = await (await fetch(`https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest`)).json()
+    app.stats = await (await fetch(`https://us-central1-nackjunction.cloudfunctions.net/app/stats`)).json()
+    console.log(app.stats)
     app.loading = false
   }
 </script>

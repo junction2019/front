@@ -1,31 +1,37 @@
 const functions = require('firebase-functions')
-// const got = require('got')
+const got = require('got')
 const fs = require('fs')
+const express = require('express');
+const cors = require('cors')({origin: true});
+const app = express();
+app.use(cors);
 
-const emailHtml = fs.readFileSync('./email1.html', 'utf8')
+const emailHtml = fs.readFileSync(`${__dirname}/email1.html`, 'utf8')
 
 const cfg = functions.config()
 const apiKey = cfg.sendgrid.key
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
- response.send("Hello from Firebase!")
+app.get('/helloWorld', (req, res) => {
+  res.send("Hello from Firebase!")
 })
 
-exports.email = functions.https.onRequest(async (req, res) => {
+app.post('/email',async (req, res) => {
   // const {body} = await got.get('https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest', {
   //   json: true,
   // })
-  const {email} = req.body || '1@inventix.ru'
+  const email = req.body.email || '1@inventix.ru'
 
   await sendEmail({
-    to: email,
-    from: `noreply@nackjunction.com`,
-    subject: `heartbeat`,
+    to: {email},
+    from: {email:`noreply@nackjunction.com`, name: 'Junction'},
+    subject: `Heartbeat [ACTION REQUIRED]`,
     content: emailHtml,
   })
 
   res.send({ok: 1})
 })
+
+exports.app = functions.https.onRequest(app)
 
 async function sendEmail(msg) {
   const body = {
@@ -46,7 +52,9 @@ async function sendEmail(msg) {
     subject: msg.subject,
     // reply_to: msg.reply_to,
   }
-  // console.log(JSON.stringify(body, null, 2))
+  console.log(msg)
+  console.log(body)
+  console.log(JSON.stringify(body, null, 2))
 
   await got.post(`https://api.sendgrid.com/v3/mail/send`, {
     json: true,
@@ -54,5 +62,8 @@ async function sendEmail(msg) {
       authorization: `Bearer ${apiKey}`,
     },
     body,
+  }).catch(err => {
+    console.log(err.response.body)
+    throw err
   })
 }

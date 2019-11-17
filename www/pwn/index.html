@@ -1,11 +1,12 @@
 <html>
 <head>
+  <meta charset="UTF-8">
   <title>NackJunction</title>
   <link
     href="https://fonts.googleapis.com/css?family=Caveat:400,700|Montserrat:400,700&amp;display=swap&amp;subset=cyrillic"
     rel="stylesheet"
   />
-  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet" /> 
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet" />
   <style>
     .main {
       max-width: 1000px;
@@ -33,7 +34,7 @@
       font-weight: 100;
     }
 
-    div.form input {
+    .form input {
       line-height: 40px;
       font-size: 28px;
       min-width: 400px;
@@ -41,7 +42,7 @@
       margin-right: 20px;
     }
 
-    div.form button {
+    .form button {
       height: 48px;
       background: #2979ff;
       color: #fff;
@@ -63,49 +64,72 @@
     </h4>
     <h3>
       Your photo is on the&nbsp;
-      <a href="/pwn" target="_blank">
+      <a href="/display/" target="_blank">
         TV (Junction Hackathon, <b>Section C</b>)
       </a>
       . It will be replaced with the next victim. Take care of your
       teammates and share the same email to them.
     </h3>
-    <div class="form">
+    <form class="form">
       <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fbestanimations.com%2FSigns%26Shapes%2FArrows%2FRight%2Fright-arrow-31.gif&f=1&nofb=1" height="100" />
-      <input type="email" value="" placeholder="Email" />
+      <input type="email" value="" id="emailInput" required placeholder="Email" />
       <button
-        type="button"
-        
+        id="btn1"
+        type="submit"
+        style="cursor: pointer"
+
       >
         Send email
       </button>
-    </div>
+    </form>
   </div>
 
 <!-- <script src="https://unpkg.com/vue@2.6.10/dist/vue.js"></script> -->
-<!-- <script>
-  main()
+<script>
+  const emailField = document.getElementById('emailInput')
+  const btn1 = document.getElementById('btn1')
+  const [form1] = document.getElementsByClassName('form')
+  // console.log(form1)
 
-  async function main () {
-    const app = new Vue({
-      el: '#app',
+  // btn1.onclick = () => {
+  //
+  // }
+  form1.onsubmit = async e => {
+      e.preventDefault()
 
-      data: {
-          loading: 'Loading...',
-          latest: undefined,
-      },
-
-      methods: {
-          login: async function () {
-
-          }
+      const email = emailField.value
+      const valid = validateEmail(email)
+      if(!valid) {
+          alert(`email invalid: ${email}`)
+          return
       }
-    })
 
-    const r = await (await fetch(`https://firestore.googleapis.com/v1/projects/nackjunction/databases/(default)/documents/latest/latest`)).json()
-    console.log(r.fields)
-    app.latest = r.fields
-    app.loading = false
+      try {
+          const r = await (await fetch(`https://us-central1-nackjunction.cloudfunctions.net/app/email`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({email})
+          })).json()
+          console.log(r)
+          alert(`Email sent to ${email}`)
+      } catch (err) {
+          logError(err)
+      }
   }
-</script> -->
+
+  function validateEmail(email) {
+      const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(String(email).toLowerCase());
+  }
+
+  function logError(err) {
+      console.error(err)
+      alert('Error\n ' + JSON.stringify(err, null, 2))
+  }
+
+
+</script>
 </body>
 </html>

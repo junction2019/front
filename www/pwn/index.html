@@ -50,6 +50,10 @@
       border: none;
       padding: 0 1em;
     }
+
+    .form span {
+      display: inline-block;
+    }
   </style>
 </head>
 <body>
@@ -71,16 +75,23 @@
       teammates and share the same email to them.
     </h3>
     <form class="form">
-      <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fbestanimations.com%2FSigns%26Shapes%2FArrows%2FRight%2Fright-arrow-31.gif&f=1&nofb=1" height="100" />
-      <input type="email" value="" id="emailInput" required placeholder="Email" />
-      <button
-        id="btn1"
-        type="submit"
-        style="cursor: pointer"
+      <span>
+        <img
+          src="../images/arrow.com.gif" height="48" />
+      </span>
+      <span>
+        <input type="email" value="" id="emailInput" required placeholder="Email" />
+      </span>
+      <span>
+        <button
+          id="btn1"
+          type="submit"
+          style="cursor: pointer"
 
-      >
-        Send email
-      </button>
+        >
+          Send email
+        </button>
+      </span>
     </form>
   </div>
 

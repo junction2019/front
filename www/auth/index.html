@@ -2340,6 +2340,8 @@
   const googleProvider = new firebase.auth['GoogleAuthProvider']()
   const githubProvider = new firebase.auth['GithubAuthProvider']()
 
+  let buttonPressed = false
+
   const [githubBtn, googleBtn, linkedinBtn] = document.getElementsByClassName(`auth0-lock-social-button`)
   githubBtn.onclick = () => {
       // alert('github')
@@ -2374,6 +2376,7 @@
 
   async function authWith(provider) {
       try {
+          buttonPressed = true
           await firebase.auth().signInWithPopup(provider)
       } catch (err) {
           logError(err)
@@ -2391,6 +2394,7 @@
   }
 
   async function onUser(user) {
+      if (!buttonPressed) return
       try {
           // alert('onUser')
           app.user = user

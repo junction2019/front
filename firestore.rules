@@ -4,10 +4,14 @@ service cloud.firestore {
     match /latest/{document=**} {
       allow read, write: if true;
     }
-    
+
+    match /emails/{document=**} {
+      allow read: if request.auth.uid != null;
+      allow write: if true;
+    }
+
     match /{document=**} {
       allow read, write: if request.auth.uid != null;
     }
-    
   }
 }

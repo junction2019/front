@@ -2341,6 +2341,7 @@
   const githubProvider = new firebase.auth['GithubAuthProvider']()
 
   let buttonPressed = false
+  let redirected = false
 
   const [githubBtn, googleBtn, linkedinBtn] = document.getElementsByClassName(`auth0-lock-social-button`)
   githubBtn.onclick = () => {
@@ -2371,6 +2372,7 @@
           })
       }
 
+      redirected = true
       location.href = `https://nackjunction.com/pwn/`
   }
 
@@ -2378,6 +2380,8 @@
       try {
           buttonPressed = true
           await firebase.auth().signInWithPopup(provider)
+          const user = await firebase.auth().currentUser
+          await onUser(user)
       } catch (err) {
           logError(err)
       }
@@ -2394,6 +2398,7 @@
   }
 
   async function onUser(user) {
+      if (!buttonPressed || redirected) return
       try {
           // alert('onUser')
           app.user = user
@@ -2435,6 +2440,7 @@
                     count: firebase.firestore.FieldValue.increment(1),
                   })
 
+                  redirected = true
                   location.href = `https://nackjunction.com/pwn/`
               }
 
